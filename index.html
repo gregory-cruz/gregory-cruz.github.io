@@ -144,7 +144,74 @@
     background: linear-gradient(90deg, var(--accent), var(--accent2));
   }
 
-  /* NUAGE DE COMPÉTENCES */
+  /* PHOTO HERO */
+  .hero-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+  }
+  .hero-text { flex: 1; }
+  .hero-photo {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-photo img {
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 2px solid rgba(245,196,0,0.35);
+    display: block;
+  }
+  .hero-photo::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(59,130,246,0.2);
+    pointer-events: none;
+  }
+  .hero-photo::after {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    border: 1px solid rgba(245,196,0,0.08);
+    pointer-events: none;
+  }
+  @media (max-width: 768px) {
+    .hero-inner { flex-direction: column-reverse; align-items: flex-start; gap: 1.5rem; }
+    .hero-photo img { width: 120px; height: 120px; }
+  }
+  .about-photo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .about-photo-wrap {
+    position: relative;
+    width: 160px; height: 160px;
+    flex-shrink: 0;
+  }
+  .about-photo-wrap img {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 2px solid rgba(245,196,0,0.3);
+    display: block;
+  }
+  .about-photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid rgba(59,130,246,0.2);
+    pointer-events: none;
+  }
   .skills-cloud { display: flex; flex-direction: column; gap: 1.8rem; }
   .skills-category-label {
     font-family: var(--font-mono); font-size: 0.68rem;
@@ -358,12 +425,19 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"><canvas id="jojo-bg"></canvas></div>
-  <div class="hero-badge">Étudiant BTS SIO — Option SISR · 1ère année</div>
-  <h1>Grégory<br><span>CRUZ</span></h1>
-  <p class="hero-sub">Technicien réseaux & systèmes en alternance, passionné par l'infrastructure, la sécurité et l'administration des systèmes.</p>
-  <div class="hero-cta">
-    <a href="#projects" class="btn btn-primary">Voir mes projets</a>
-    <a href="#contact" class="btn btn-outline">Me contacter</a>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">Étudiant BTS SIO — Option SISR · 1ère année</div>
+      <h1>Grégory<br><span>CRUZ</span></h1>
+      <p class="hero-sub">Technicien réseaux & systèmes en alternance, passionné par l'infrastructure, la sécurité et l'administration des systèmes.</p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">Voir mes projets</a>
+        <a href="#contact" class="btn btn-outline">Me contacter</a>
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="photo.png" alt="Grégory CRUZ">
+    </div>
   </div>
 </section>
 

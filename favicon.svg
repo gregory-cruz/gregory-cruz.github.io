@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Fond bleu nuit -->
+  <rect width="32" height="32" rx="6" fill="#080e1a"/>
+  
+  <!-- Classeur/portfolio : corps -->
+  <rect x="7" y="10" width="18" height="14" rx="2" fill="#0d1829" stroke="#3b82f6" stroke-width="1.2"/>
+  
+  <!-- Rabat haut du portfolio -->
+  <path d="M11 10 L11 7 Q11 6 12 6 L20 6 Q21 6 21 7 L21 10" fill="#0d1829" stroke="#3b82f6" stroke-width="1.2"/>
+  
+  <!-- Lignes de contenu (pages) -->
+  <line x1="10.5" y1="14" x2="21.5" y2="14" stroke="#f5c400" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="10.5" y1="17" x2="18" y2="17" stroke="#6b7fa3" stroke-width="1" stroke-linecap="round"/>
+  <line x1="10.5" y1="20" x2="16" y2="20" stroke="#6b7fa3" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Point doré accent -->
+  <circle cx="23" cy="9" r="3" fill="#f5c400"/>
+</svg>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio – Grégory CRUZ</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E3ENZ21T67"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E3ENZ21T67');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Lato:wght@300;400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080e1a; --surface: #0d1829; --surface2: #132035;
+    --accent: #f5c400; --accent2: #3b82f6;
+    --text: #e8eef8; --muted: #6b7fa3; --border: rgba(255,255,255,0.07);
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Lato', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.6; overflow-x:hidden; }
+
+  /* NAV */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:1.2rem 3rem; display:flex; justify-content:space-between; align-items:center; background:rgba(8,14,26,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .nav-logo { font-family:var(--font-mono); font-size:0.85rem; color:var(--accent); letter-spacing:0.1em; text-decoration:none; }
+  .nav-links { display:flex; gap:2.5rem; list-style:none; }
+  .nav-links a { font-size:0.85rem; color:var(--muted); text-decoration:none; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.2s; position:relative; }
+  .nav-links a:hover { color:var(--text); }
+  .nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform 0.25s ease; }
+  .nav-links a:hover::after { transform:scaleX(1); }
+  .nav-burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+  .nav-burger span { display:block; width:22px; height:2px; background:var(--muted); border-radius:2px; transition:all 0.3s; }
+  .nav-mobile { display:none; flex-direction:column; position:fixed; top:57px; left:0; right:0; z-index:99; background:rgba(8,14,26,0.97); border-bottom:1px solid var(--border); padding:1.5rem; gap:1.2rem; }
+  .nav-mobile.open { display:flex; }
+  .nav-mobile a { font-family:var(--font-mono); font-size:0.85rem; color:var(--muted); text-decoration:none; letter-spacing:0.1em; text-transform:uppercase; transition:color 0.2s; }
+  .nav-mobile a:hover { color:var(--accent); }
+
+  /* HERO */
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:0 10vw; position:relative; overflow:hidden; }
+  .hero-grid { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .hero-grid canvas { position:absolute; inset:0; width:100%; height:100%; }
+  .hero-inner { display:flex; justify-content:space-between; align-items:center; gap:2rem; width:100%; position:relative; z-index:2; }
+  .hero-text { flex:1; }
+  .hero-badge { font-family:var(--font-mono); font-size:0.75rem; color:var(--accent); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:1.5rem; display:inline-flex; align-items:center; gap:0.6rem; animation:fadeUp 0.7s ease both; animation-delay:0.1s; }
+  .hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .hero h1 { font-family:var(--font-display); font-size:clamp(3rem,8vw,7rem); font-weight:800; line-height:1.05; letter-spacing:-0.03em; animation:fadeUp 0.7s ease both; animation-delay:0.25s; }
+  .hero h1 span { color:var(--accent2); }
+  .hero-sub { margin-top:1.5rem; font-size:clamp(1rem,1.5vw,1.25rem); color:var(--muted); max-width:540px; font-weight:400; animation:fadeUp 0.7s ease both; animation-delay:0.4s; }
+  .hero-cta { margin-top:3rem; display:flex; gap:1rem; flex-wrap:wrap; animation:fadeUp 0.7s ease both; animation-delay:0.55s; }
+  .hero-photo { flex-shrink:0; position:relative; z-index:2; }
+  .hero-photo img { width:260px; height:260px; border-radius:50%; object-fit:cover; object-position:center 10%; border:2px solid rgba(245,196,0,0.35); display:block; }
+  .hero-photo::before { content:''; position:absolute; inset:-8px; border-radius:50%; border:1px solid rgba(59,130,246,0.2); pointer-events:none; }
+  .hero-photo::after { content:''; position:absolute; inset:-16px; border-radius:50%; border:1px solid rgba(245,196,0,0.08); pointer-events:none; }
+
+  /* BOUTONS */
+  .btn { padding:0.85rem 2rem; border-radius:4px; font-family:var(--font-mono); font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; cursor:pointer; border:none; transition:all 0.2s; }
+  .btn-primary { background:var(--accent); color:#080e1a; font-weight:700; }
+  .btn-primary:hover { background:#ffd429; transform:translateY(-2px); }
+  .btn-outline { background:transparent; color:var(--text); border:1px solid var(--border); }
+  .btn-outline:hover { border-color:rgba(255,255,255,0.25); transform:translateY(-2px); }
+
+  /* SECTIONS */
+  section { padding:7rem 10vw; }
+  .section-label { font-family:var(--font-mono); font-size:0.7rem; color:var(--accent); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1rem; }
+  .section-title { font-family:var(--font-display); font-size:clamp(1.8rem,3vw,2.8rem); font-weight:700; letter-spacing:-0.02em; margin-bottom:3.5rem; }
+  h1,h2,h3 { font-family:var(--font-display); }
+
+  /* À PROPOS */
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+  .about-text p { color:var(--muted); margin-bottom:1.2rem; line-height:1.8; }
+  .about-info { display:flex; flex-direction:column; gap:1rem; margin-top:2rem; }
+  .info-row { display:flex; gap:1rem; font-family:var(--font-mono); font-size:0.8rem; }
+  .info-label { color:var(--accent); min-width:100px; }
+  .info-val { color:var(--text); }
+  .skills-cloud { display:flex; flex-direction:column; gap:1.8rem; }
+  .skills-category-label { font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent); margin-bottom:0.6rem; }
+  .skills-tags { display:flex; flex-wrap:wrap; gap:0.6rem; }
+  .skill-tag { font-family:var(--font-mono); font-size:0.78rem; padding:0.45rem 1rem; border-radius:30px; border:1px solid var(--border); color:var(--text); background:var(--surface); transition:border-color 0.2s,color 0.2s,background 0.2s; cursor:default; }
+  .skill-tag:hover { border-color:var(--accent); color:var(--accent); background:rgba(245,196,0,0.06); }
+  .skill-tag.blue:hover { border-color:var(--accent2); color:var(--accent2); background:rgba(59,130,246,0.06); }
+
+  /* PROJETS */
+  .filter-tabs { display:flex; gap:0.75rem; margin-bottom:2.5rem; flex-wrap:wrap; }
+  .filter-btn { font-family:var(--font-mono); font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.6rem 1.4rem; border-radius:30px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+  .filter-btn:hover { color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .filter-btn.active { background:var(--accent); color:#080e1a; border-color:var(--accent); font-weight:700; }
+  .projects-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; align-items:start; }
+  .project-card { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent2); border-radius:8px; padding:2rem; transition:border-color 0.2s,transform 0.2s; display:flex; flex-direction:column; }
+  .project-card[data-category="alternance"] { border-top:3px solid var(--accent); }
+  .project-card:hover { border-color:rgba(59,130,246,0.4); transform:translateY(-4px); }
+  .project-card[data-category="alternance"]:hover { border-color:rgba(245,196,0,0.4); }
+  .project-card.hidden { display:none; }
+  .project-tag { font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent2); margin-bottom:0.6rem; }
+  .project-card[data-category="alternance"] .project-tag { color:var(--accent); }
+  .project-card h3 { font-size:1rem; font-weight:700; margin-bottom:0.75rem; display:flex; align-items:flex-start; gap:0.6rem; }
+  .project-card p { color:var(--muted); font-size:0.9rem; line-height:1.7; flex:1; }
+  .project-techs { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.5rem; }
+  .tech-badge { font-family:var(--font-mono); font-size:0.7rem; background:var(--surface2); color:var(--muted); padding:0.3rem 0.7rem; border-radius:3px; border:1px solid var(--border); }
+  .doc-link { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:3px; background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.3); color:var(--accent2); text-decoration:none; font-family:var(--font-mono); font-size:0.55rem; flex-shrink:0; transition:background 0.2s,border-color 0.2s; }
+  .doc-link:hover { background:rgba(59,130,246,0.22); border-color:rgba(59,130,246,0.6); }
+
+  /* TIMELINE */
+  .timeline { display:flex; flex-direction:column; }
+  .timeline-item { display:grid; grid-template-columns:160px 1fr; gap:2.5rem; padding:2.5rem 0; border-bottom:1px solid var(--border); }
+  .timeline-item:last-child { border-bottom:none; }
+  .timeline-date { font-family:var(--font-mono); font-size:0.75rem; color:var(--muted); padding-top:0.25rem; }
+  .timeline-content h3 { font-size:1rem; font-weight:700; margin-bottom:0.3rem; }
+  .timeline-company { color:var(--accent); font-size:0.85rem; margin-bottom:0.8rem; }
+  .timeline-desc { color:var(--muted); font-size:0.9rem; line-height:1.7; }
+
+  /* CONTACT */
+  .contact-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:3.5rem; max-width:640px; }
+  .contact-wrapper p { color:var(--muted); margin-bottom:2rem; line-height:1.8; }
+  .contact-links { display:flex; flex-direction:column; gap:1rem; }
+  .contact-link { display:flex; align-items:center; gap:1rem; font-family:var(--font-mono); font-size:0.85rem; color:var(--text); text-decoration:none; padding:1rem 1.2rem; background:var(--surface2); border:1px solid var(--border); border-radius:4px; transition:border-color 0.2s; }
+  .contact-link:hover { border-color:rgba(245,196,0,0.35); }
+  .contact-link-label { color:var(--muted); font-size:0.7rem; min-width:80px; }
+
+  /* FOOTER */
+  footer { padding:2rem 10vw; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:0.75rem; color:var(--muted); flex-wrap:wrap; gap:1rem; }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity 0.6s ease,transform 0.6s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width:900px) {
+    .projects-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+    .about-grid { grid-template-columns:1fr; gap:3rem; }
+  }
+  @media (max-width:768px) {
+    nav { padding:1rem 1.5rem; }
+    .nav-links { display:none; }
+    .nav-burger { display:flex; }
+    section { padding:4rem 1.25rem; }
+    .hero { padding:0 1.25rem; min-height:100svh; }
+    .hero h1 { font-size:clamp(2.5rem,12vw,4rem); }
+    .hero-sub { font-size:0.95rem; }
+    .hero-cta { flex-direction:column; gap:0.75rem; }
+    .hero-inner { flex-direction:column-reverse; align-items:flex-start; gap:1.5rem; }
+    .hero-photo img { width:120px; height:120px; }
+    .about-grid { grid-template-columns:1fr; gap:2.5rem; }
+    .projects-grid { grid-template-columns:1fr; }
+    .filter-tabs { gap:0.5rem; }
+    .filter-btn { font-size:0.7rem; padding:0.5rem 1rem; }
+    .timeline-item { grid-template-columns:1fr; gap:0.3rem; padding:1.5rem 0; }
+    .contact-wrapper { padding:1.5rem 1.25rem; }
+    .section-title { margin-bottom:2rem; }
+    .skills-cloud { gap:1.4rem; }
+  }
+  @media (max-width:380px) {
+    .hero h1 { font-size:2.2rem; }
+    .filter-tabs { flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">// gregory.cruz</a>
+  <ul class="nav-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#projects">Projets</a></li>
+    <li><a href="veille.html">Veille</a></li>
+    <li><a href="#experience">Parcours</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-burger" id="burger" onclick="document.getElementById('nav-mobile').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#about" onclick="document.getElementById('nav-mobile').classList.remove('open')">À propos</a>
+  <a href="#projects" onclick="document.getElementById('nav-mobile').classList.remove('open')">Projets</a>
+  <a href="veille.html">Veille</a>
+  <a href="#experience" onclick="document.getElementById('nav-mobile').classList.remove('open')">Parcours</a>
+  <a href="#contact" onclick="document.getElementById('nav-mobile').classList.remove('open')">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"><canvas id="jojo-bg"></canvas></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">Étudiant BTS SIO — Option SISR · 1ère année</div>
+      <h1>Grégory<br><span>CRUZ</span></h1>
+      <p class="hero-sub">Technicien réseaux &amp; systèmes en alternance, passionné par l'infrastructure, la sécurité et l'administration des systèmes.</p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">Voir mes projets</a>
+        <a href="#contact" class="btn btn-outline">Me contacter</a>
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="photo.png" alt="Grégory CRUZ">
+    </div>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section id="about">
+  <p class="section-label reveal">01 — À propos</p>
+  <h2 class="section-title reveal">Qui suis-je ?</h2>
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <p>Je suis étudiant en BTS SIO (Services Informatiques aux Organisations), option SISR (Solutions d'Infrastructure, Systèmes et Réseaux) à <strong>Keyce Informatique</strong>, basé à Nîmes.</p>
+      <p>Mon parcours est atypique : titulaire d'un Bac Pro Gestion Administration et d'un BTS Comptabilité Gestion réalisé en alternance, j'ai fait le choix de me reconvertir dans l'informatique et les réseaux. Cette expérience en gestion m'apporte une vraie compréhension des environnements professionnels et des besoins métiers — un atout concret pour le support et l'administration système.</p>
+      <p>En alternance à la <strong>Polyclinique du Grand Sud</strong>, j'interviens dans un milieu médical exigeant où la fiabilité et la continuité de service sont critiques.</p>
+      <div class="about-info">
+        <div class="info-row"><span class="info-label">Formation</span><span class="info-val">BTS SIO — Option SISR</span></div>
+        <div class="info-row"><span class="info-label">Établissement</span><span class="info-val">Keyce Informatique, Nîmes</span></div>
+        <div class="info-row"><span class="info-label">Année</span><span class="info-val">1ère année (2025–2027)</span></div>
+        <div class="info-row"><span class="info-label">Alternance</span><span class="info-val">Polyclinique du Grand Sud</span></div>
+        <div class="info-row"><span class="info-label">Localisation</span><span class="info-val">Nîmes, France</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="skills-cloud">
+        <div>
+          <p class="skills-category-label">Systèmes</p>
+          <div class="skills-tags">
+            <span class="skill-tag">Windows Server 2022</span>
+            <span class="skill-tag">Active Directory</span>
+            <span class="skill-tag">DHCP / DNS</span>
+            <span class="skill-tag">GPO / PSO</span>
+            <span class="skill-tag">Windows 11</span>
+            <span class="skill-tag">Virtualisation</span>
+            <span class="skill-tag">GLPI</span>
+            <span class="skill-tag">Serveur de fichiers</span>
+          </div>
+        </div>
+        <div>
+          <p class="skills-category-label">Réseaux &amp; Sécurité</p>
+          <div class="skills-tags">
+            <span class="skill-tag blue">pfSense / pfSync</span>
+            <span class="skill-tag blue">Cisco</span>
+            <span class="skill-tag blue">Packet Tracer</span>
+            <span class="skill-tag blue">VLAN</span>
+            <span class="skill-tag blue">OSPF / Routage</span>
+            <span class="skill-tag blue">ACL</span>
+            <span class="skill-tag blue">Spanning Tree</span>
+            <span class="skill-tag blue">Pare-feu</span>
+          </div>
+        </div>
+        <div>
+          <p class="skills-category-label">Services &amp; Outils</p>
+          <div class="skills-tags">
+            <span class="skill-tag">XiVO / Linphone</span>
+            <span class="skill-tag">VoIP / SIP</span>
+            <span class="skill-tag">Support N1/N2</span>
+            <span class="skill-tag">Elsan Pro Proximité</span>
+            <span class="skill-tag">Gestion des logs</span>
+            <span class="skill-tag">Veille techno</span>
+            <span class="skill-tag">Documentation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJETS -->
+<section id="projects">
+  <p class="section-label reveal">02 — Projets</p>
+  <h2 class="section-title reveal">Mes réalisations</h2>
+  <div class="filter-tabs reveal">
+    <button class="filter-btn active" data-filter="all">Tous</button>
+    <button class="filter-btn" data-filter="ecole">École</button>
+    <button class="filter-btn" data-filter="alternance">Alternance — PGS</button>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Infrastructure</p>
+      <h3>Mise en place d'une infrastructure AD <a href="fiches/fiche-ad-infrastructure.docx" class="doc-link" title="Télécharger la fiche technique" download>DOC</a></h3>
+      <p>Déploiement complet sous Windows Server 2022 en environnement virtualisé (serveur + client Windows 11). Promotion en contrôleur de domaine, configuration AD/DHCP/DNS, GPO, PSO et gestion des droits NTFS par groupes.</p>
+      <div class="project-techs"><span class="tech-badge">Windows Server 2022</span><span class="tech-badge">Active Directory</span><span class="tech-badge">DHCP / DNS</span><span class="tech-badge">GPO / PSO</span><span class="tech-badge">Virtualisation</span></div>
+    </div>
+    <div class="project-card reveal" data-category="alternance">
+      <p class="project-tag">Alternance PGS — Déploiement</p>
+      <h3>Migration du parc vers Windows 11 (~250 postes)</h3>
+      <p>Migration manuelle de près de 250 postes à la Polyclinique du Grand Sud. Le contexte médical excluait tout déploiement automatisé — une défaillance aurait pu interrompre des services critiques et engager la sécurité des patients.</p>
+      <div class="project-techs"><span class="tech-badge">Windows 11</span><span class="tech-badge">Active Directory</span><span class="tech-badge">Migration</span><span class="tech-badge">Environnement médical</span><span class="tech-badge">Gestion de parc</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Sécurité réseau</p>
+      <h3>Haute disponibilité pfSense avec pfSync</h3>
+      <p>Mise en place de deux instances pfSense en VM pour assurer la redondance du pare-feu LAN. pfSync synchronise les tables d'états en temps réel, garantissant la continuité de service en cas de défaillance.</p>
+      <div class="project-techs"><span class="tech-badge">pfSense</span><span class="tech-badge">pfSync</span><span class="tech-badge">Haute disponibilité</span><span class="tech-badge">Pare-feu</span><span class="tech-badge">Virtualisation</span></div>
+    </div>
+    <div class="project-card reveal" data-category="alternance">
+      <p class="project-tag">Alternance PGS — Support</p>
+      <h3>Support utilisateurs &amp; administration réseau</h3>
+      <p>Traitement des incidents via <strong>Elsan Pro Proximité</strong> : mots de passe, pannes, accès, support logiciel auprès des équipes médicales. Configuration de switches dans un environnement réseau externalisé.</p>
+      <div class="project-techs"><span class="tech-badge">Elsan Pro Proximité</span><span class="tech-badge">Support N1/N2</span><span class="tech-badge">Gestion des accès</span><span class="tech-badge">Switches</span><span class="tech-badge">Environnement médical</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Réseau</p>
+      <h3>Simulations réseau — Cisco Packet Tracer</h3>
+      <p>Plusieurs TP de simulation réseau : VLANs, routage OSPF, Spanning Tree, DHCP/DNS et téléphonie IP sur des topologies représentatives d'environnements professionnels.</p>
+      <div class="project-techs"><span class="tech-badge">Cisco Packet Tracer</span><span class="tech-badge">VLAN</span><span class="tech-badge">OSPF</span><span class="tech-badge">Spanning Tree</span><span class="tech-badge">DHCP / DNS</span></div>
+    </div>
+    <div class="project-card reveal" data-category="alternance">
+      <p class="project-tag">Alternance PGS — Administration</p>
+      <h3>Création de postes &amp; comptes utilisateurs</h3>
+      <p>Création et configuration de postes et comptes dans l'Active Directory de la PGS. Attribution des droits selon les profils métiers et intégration des machines au domaine.</p>
+      <div class="project-techs"><span class="tech-badge">Active Directory</span><span class="tech-badge">Windows 11</span><span class="tech-badge">Gestion des accès</span><span class="tech-badge">Administration système</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — VoIP</p>
+      <h3>Déploiement de la téléphonie IP (XiVO)</h3>
+      <p>Installation et configuration d'un serveur XiVO sur une VM Ubuntu Linux. Mise en place des extensions SIP, configuration des lignes internes et tests de communication entre postes.</p>
+      <div class="project-techs"><span class="tech-badge">XiVO</span><span class="tech-badge">VoIP / SIP</span><span class="tech-badge">Ubuntu Linux</span><span class="tech-badge">Virtualisation</span></div>
+    </div>
+    <div class="project-card reveal" data-category="alternance">
+      <p class="project-tag">Alternance PGS — Qualité</p>
+      <h3>Procédure pour la certification HAS</h3>
+      <p>Élaboration de procédures informatiques pour la préparation à la certification HAS. Documentation technique garantissant la conformité aux exigences qualité du secteur médical.</p>
+      <div class="project-techs"><span class="tech-badge">Certification HAS</span><span class="tech-badge">Documentation</span><span class="tech-badge">Qualité</span><span class="tech-badge">Secteur médical</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Gestion de parc</p>
+      <h3>Mise en place de GLPI</h3>
+      <p>Déploiement de GLPI pour recenser et gérer le parc informatique. Inventaire des équipements, fiches matérielles et suivi des tickets d'incidents.</p>
+      <div class="project-techs"><span class="tech-badge">GLPI</span><span class="tech-badge">Gestion de parc</span><span class="tech-badge">Inventaire</span><span class="tech-badge">Ticketing</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Sécurité réseau</p>
+      <h3>Mise en place d'ACL</h3>
+      <p>Configuration de listes de contrôle d'accès pour filtrer et sécuriser les flux réseau entre segments selon les adresses IP et les ports.</p>
+      <div class="project-techs"><span class="tech-badge">ACL</span><span class="tech-badge">Filtrage réseau</span><span class="tech-badge">Sécurité</span><span class="tech-badge">Cisco</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Infrastructure</p>
+      <h3>Mise en place d'un serveur de fichiers</h3>
+      <p>Configuration d'un serveur de fichiers partagés avec droits NTFS par groupes et UO. Création des dossiers, attribution des permissions et vérification des accès par profil.</p>
+      <div class="project-techs"><span class="tech-badge">Windows Server</span><span class="tech-badge">Partage réseau</span><span class="tech-badge">NTFS</span><span class="tech-badge">Active Directory</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Supervision</p>
+      <h3>Gestion des logs système</h3>
+      <p>Exploitation des journaux d'événements pour détecter les anomalies, surveiller les connexions et assurer la traçabilité sur les équipements réseau et serveurs.</p>
+      <div class="project-techs"><span class="tech-badge">Logs système</span><span class="tech-badge">Supervision</span><span class="tech-badge">Analyse</span><span class="tech-badge">Sécurité</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — VoIP</p>
+      <h3>Projet VOIP — Linphone</h3>
+      <p>Préparation et planification du déploiement VoIP avec Linphone. Analyse des besoins, architecture cible et rédaction du dossier de projet.</p>
+      <div class="project-techs"><span class="tech-badge">Linphone</span><span class="tech-badge">VoIP</span><span class="tech-badge">Gestion de projet</span><span class="tech-badge">SIP</span></div>
+    </div>
+    <div class="project-card reveal" data-category="ecole">
+      <p class="project-tag">École — Veille</p>
+      <h3>Veille technologique</h3>
+      <p>Démarche de veille sur les évolutions réseaux et systèmes. Sélection de sources fiables, suivi des tendances cybersécurité et synthèse des informations collectées.</p>
+      <div class="project-techs"><span class="tech-badge">Veille techno</span><span class="tech-badge">Cybersécurité</span><span class="tech-badge">Réseaux</span></div>
+    </div>
+    <div class="project-card reveal" data-category="alternance">
+      <p class="project-tag">Alternance PGS — Communication</p>
+      <h3>Communication LinkedIn PGS</h3>
+      <p>Contribution à la présence en ligne de la Polyclinique du Grand Sud sur LinkedIn. Création et publication de contenus numériques dans le respect du cadre juridique.</p>
+      <div class="project-techs"><span class="tech-badge">LinkedIn</span><span class="tech-badge">Communication digitale</span><span class="tech-badge">Médias numériques</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARCOURS -->
+<section id="experience">
+  <p class="section-label reveal">03 — Parcours</p>
+  <h2 class="section-title reveal">Formation &amp; expériences</h2>
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2025 – 2027</div>
+      <div class="timeline-content">
+        <h3>BTS SIO — Option SISR · Alternance</h3>
+        <p class="timeline-company">Keyce Informatique × Polyclinique du Grand Sud (PGS), Nîmes</p>
+        <p class="timeline-desc">Formation en administration systèmes et réseaux en alternance à la Polyclinique du Grand Sud. Déploiement d'infrastructures Windows Server, configuration réseau (Cisco, pfSense), téléphonie IP, et support technique en environnement médical critique.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2020 – 2023</div>
+      <div class="timeline-content">
+        <h3>BTS Comptabilité Gestion — Alternance</h3>
+        <p class="timeline-company">IFC de Nîmes × Phytocontrol, Nîmes</p>
+        <p class="timeline-desc">Formation en comptabilité et gestion réalisée en alternance chez Phytocontrol, laboratoire spécialisé dans l'analyse des résidus de pesticides. Une année supplémentaire exercée en entreprise à l'issue du diplôme.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2014 – 2017</div>
+      <div class="timeline-content">
+        <h3>Bac Pro Gestion Administration</h3>
+        <p class="timeline-company">CCI de Nîmes</p>
+        <p class="timeline-desc">Baccalauréat professionnel spécialisé dans la gestion administrative : traitement de l'information, relations clients/fournisseurs et gestion des ressources humaines.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <p class="section-label reveal">04 — Contact</p>
+  <h2 class="section-title reveal">Me contacter</h2>
+  <div class="contact-wrapper reveal">
+    <p>Tu veux me contacter pour une opportunité, un projet ou simplement échanger ? N'hésite pas à me joindre via les liens ci-dessous.</p>
+    <div class="contact-links">
+      <a href="#" class="contact-link" id="email-link">
+        <span class="contact-link-label">Email</span>
+        <span id="email-display">chargement...</span>
+      </a>
+      <a href="https://www.linkedin.com/in/gr%C3%A9gory-cruz-722933193/" class="contact-link" target="_blank">
+        <span class="contact-link-label">LinkedIn</span>
+        linkedin.com/in/grégory-cruz-722933193
+      </a>
+      <a href="cv.pdf" class="contact-link" download>
+        <span class="contact-link-label">CV</span>
+        Télécharger mon CV (.pdf)
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 — Grégory CRUZ</span>
+  <span>BTS SIO — Option SISR · Keyce Informatique, Nîmes</span>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.transitionDelay = (i * 0.07) + 's';
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Email obfuscation
+(function() {
+  const u = 'gregory.cruz300'; const d = 'gmail.com';
+  const email = u + '@' + d;
+  const link = document.getElementById('email-link');
+  const display = document.getElementById('email-display');
+  if (link && display) { link.href = 'mailto:' + email; display.textContent = email; }
+})();
+
+// Filtres projets
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.classList.toggle('hidden', filter !== 'all' && card.dataset.category !== filter);
+    });
+  });
+});
+
+// Canvas JoJo
+(function() {
+  const canvas = document.getElementById('jojo-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles, lines;
+  function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  function initLines() {
+    lines = [];
+    for (let i = 0; i < 18; i++) {
+      lines.push({ x:Math.random()*W*1.5-W*0.25, y:Math.random()*H*1.5-H*0.25, angle:-38+(Math.random()*16-8), length:80+Math.random()*220, width:0.5+Math.random()*1.5, opacity:0.04+Math.random()*0.1, speed:0.08+Math.random()*0.15, color:Math.random()>0.5?'#f5c400':'#3b82f6' });
+    }
+  }
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < 38; i++) {
+      particles.push({ x:Math.random()*W, y:Math.random()*H, r:0.8+Math.random()*2.2, opacity:0.08+Math.random()*0.25, vx:(Math.random()-0.5)*0.3, vy:-0.15-Math.random()*0.35, color:Math.random()>0.4?'#f5c400':'#3b82f6' });
+    }
+  }
+  function tick() {
+    ctx.clearRect(0,0,W,H);
+    lines.forEach(l => {
+      l.x -= Math.cos((l.angle*Math.PI)/180)*l.speed;
+      l.y -= Math.sin((l.angle*Math.PI)/180)*l.speed;
+      if (l.x<-W*0.5||l.y<-H*0.5||l.x>W*1.5||l.y>H*1.5) { l.x=W*0.5+(Math.random()-0.5)*W*1.5; l.y=H+Math.random()*H*0.5; }
+      const rad=(l.angle*Math.PI)/180;
+      ctx.save(); ctx.globalAlpha=l.opacity; ctx.strokeStyle=l.color; ctx.lineWidth=l.width;
+      ctx.beginPath(); ctx.moveTo(l.x,l.y); ctx.lineTo(l.x+Math.cos(rad)*l.length,l.y+Math.sin(rad)*l.length); ctx.stroke(); ctx.restore();
+    });
+    particles.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
+      ctx.save(); ctx.globalAlpha=p.opacity; ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  }
+  window.addEventListener('resize', resize);
+  resize(); initLines(); initParticles(); tick();
+})();
+</script>
+</body>
+</html>

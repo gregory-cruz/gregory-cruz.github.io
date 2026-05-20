@@ -309,19 +309,21 @@
 
 <script>
 const FEEDS = [
-  { id: 'anssi',  label: 'ANSSI',               cat: 'secu',  color: 'blue', url: 'https://www.ssi.gouv.fr/feed/' },
-  { id: 'certfr', label: 'CERT-FR',             cat: 'secu',  color: 'blue', url: 'https://www.cert.ssi.gouv.fr/feed/' },
-  { id: 'ans',    label: 'Numérique en Santé',  cat: 'sante', color: 'sante', url: 'https://esante.gouv.fr/rss.xml' },
-  { id: 'has',    label: 'HAS',                 cat: 'sante', color: 'sante', url: 'https://www.has-sante.fr/jcms/fc_1249588/fr/rss' },
+  { id: 'anssi',  label: 'ANSSI',              cat: 'secu',  color: 'blue', url: 'https://www.ssi.gouv.fr/feed/' },
+  { id: 'certfr', label: 'CERT-FR',            cat: 'secu',  color: 'blue', url: 'https://www.cert.ssi.gouv.fr/feed/' },
+  { id: 'ans',    label: 'Numérique en Santé', cat: 'sante', color: 'sante', url: 'https://esante.gouv.fr/rss.xml' },
+  { id: 'has',    label: 'HAS',                cat: 'sante', color: 'sante', url: 'https://www.has-sante.fr/jcms/fc_1249588/fr/rss' },
 ];
 
+// Deux proxies en fallback
 const PROXIES = [
-  url => `https://api.rss2json.com/v1/api.json?count=8&rss_url=${encodeURIComponent(url)}`,
-  url => `https://feedproxy.rss2json.com/v1/api.json?count=8&rss_url=${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
 ];
 
 let allArticles = [];
 let currentFilter = 'all';
+const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
 
 function timeAgo(dateStr) {
   if (!dateStr) return '';
@@ -333,24 +335,48 @@ function timeAgo(dateStr) {
 }
 
 function stripHtml(html) {
-  return html ? html.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/gi, ' ').trim() : '';
+  return html ? html.replace(/<[^>]+>/g, '').replace(/&[a-z#0-9]+;/gi, ' ').trim() : '';
+}
+
+function parseRSS(xmlText, feed) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const items = doc.querySelectorAll('item');
+    const twoWeeksAgo = Date.now() - TWO_WEEKS;
+    const results = [];
+    items.forEach(item => {
+      const title = stripHtml(item.querySelector('title')?.textContent || '');
+      const link = item.querySelector('link')?.textContent?.trim() ||
+                   item.querySelector('link')?.getAttribute('href') || '#';
+      const desc = stripHtml(item.querySelector('description')?.textContent || '').slice(0, 160);
+      const pubDate = item.querySelector('pubDate')?.textContent ||
+                      item.querySelector('updated')?.textContent || '';
+      // Garder tous les articles des 2 dernières semaines, sinon les 6 plus récents quand même
+      if (title) results.push({ cat: feed.cat, label: feed.label, color: feed.color, title, link, desc, pubDate });
+    });
+    return results;
+  } catch(e) { return []; }
 }
 
 function renderArticles() {
   const grid = document.getElementById('articles-grid');
-  const filtered = currentFilter === 'all'
-    ? allArticles
-    : allArticles.filter(a => a.cat === currentFilter);
+  const twoWeeksAgo = Date.now() - TWO_WEEKS;
+  let filtered = currentFilter === 'all' ? allArticles : allArticles.filter(a => a.cat === currentFilter);
 
-  if (!filtered.length) {
+  // Prioriser les 2 dernières semaines, sinon afficher quand même les plus récents
+  const recent = filtered.filter(a => a.pubDate && new Date(a.pubDate) > twoWeeksAgo);
+  const toShow = recent.length >= 3 ? recent : filtered;
+
+  if (!toShow.length) {
     grid.innerHTML = '<div class="state-msg">Aucun article disponible pour cette source.</div>';
     return;
   }
 
-  grid.innerHTML = filtered.slice(0, 15).map((a, i) => `
+  grid.innerHTML = toShow.slice(0, 15).map((a, i) => `
     <a class="article-card ${a.color === 'sante' ? 'sante' : ''}"
        href="${a.link}" target="_blank" rel="noopener"
-       style="transition-delay: ${i * 0.05}s">
+       style="transition-delay:${i * 0.05}s">
       <span class="article-source">${a.label}</span>
       <span class="article-title">${a.title}</span>
       ${a.desc ? `<span class="article-desc">${a.desc}</span>` : ''}
@@ -370,24 +396,20 @@ async function fetchWithProxy(feed, proxyFn) {
   try {
     const res = await fetch(proxyFn(feed.url));
     if (!res.ok) return null;
-    const data = await res.json();
-    if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
-      return data.items.map(item => ({
-        cat: feed.cat, label: feed.label, color: feed.color,
-        title: stripHtml(item.title) || 'Sans titre',
-        desc: stripHtml(item.description)?.slice(0, 150) || '',
-        link: item.link || '#',
-        pubDate: item.pubDate || ''
-      }));
-    }
-  } catch(e) {}
-  return null;
+    // allorigins renvoie { contents: "xml..." }, corsproxy renvoie directement le XML
+    const text = res.headers.get('content-type')?.includes('json')
+      ? (await res.json()).contents
+      : await res.text();
+    if (!text) return null;
+    const parsed = parseRSS(text, feed);
+    return parsed.length ? parsed : null;
+  } catch(e) { return null; }
 }
 
 async function fetchFeed(feed) {
   for (const proxyFn of PROXIES) {
     const result = await fetchWithProxy(feed, proxyFn);
-    if (result) return result;
+    if (result && result.length) return result;
   }
   return [];
 }
@@ -409,6 +431,21 @@ async function init() {
   renderArticles();
 }
 
+document.querySelector('.filter-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderArticles();
+});
+
+init();
+
+const PROXY = 'https://corsproxy.io/?url=';
+let allArticles = [];
+let currentFilter = 'all';
+
 function timeAgo(dateStr) {
   if (!dateStr) return '';
   const diff = (Date.now() - new Date(dateStr)) / 1000;
@@ -419,14 +456,29 @@ function timeAgo(dateStr) {
 }
 
 function stripHtml(html) {
-  return html ? html.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/gi, ' ').trim() : '';
+  return html ? html.replace(/<[^>]+>/g, '').replace(/&[a-z#0-9]+;/gi, ' ').trim() : '';
+}
+
+function parseRSS(xmlText, feed) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const items = doc.querySelectorAll('item');
+    const results = [];
+    items.forEach(item => {
+      const title = stripHtml(item.querySelector('title')?.textContent || '');
+      const link = item.querySelector('link')?.textContent?.trim() || '#';
+      const desc = stripHtml(item.querySelector('description')?.textContent || '').slice(0, 160);
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      if (title) results.push({ cat: feed.cat, label: feed.label, color: feed.color, title, link, desc, pubDate });
+    });
+    return results;
+  } catch(e) { return []; }
 }
 
 function renderArticles() {
   const grid = document.getElementById('articles-grid');
-  const filtered = currentFilter === 'all'
-    ? allArticles
-    : allArticles.filter(a => a.cat === currentFilter);
+  const filtered = currentFilter === 'all' ? allArticles : allArticles.filter(a => a.cat === currentFilter);
 
   if (!filtered.length) {
     grid.innerHTML = '<div class="state-msg">Aucun article disponible pour cette source.</div>';
@@ -436,7 +488,7 @@ function renderArticles() {
   grid.innerHTML = filtered.slice(0, 15).map((a, i) => `
     <a class="article-card ${a.color === 'sante' ? 'sante' : ''}"
        href="${a.link}" target="_blank" rel="noopener"
-       style="transition-delay: ${i * 0.05}s">
+       style="transition-delay:${i * 0.05}s">
       <span class="article-source">${a.label}</span>
       <span class="article-title">${a.title}</span>
       ${a.desc ? `<span class="article-desc">${a.desc}</span>` : ''}
@@ -454,20 +506,11 @@ function renderArticles() {
 
 async function fetchFeed(feed) {
   try {
-    const res = await fetch(`${PROXY}${encodeURIComponent(feed.url)}`);
+    const res = await fetch(PROXY + encodeURIComponent(feed.url));
     if (!res.ok) return [];
-    const data = await res.json();
-    if (data.status === 'ok' && Array.isArray(data.items)) {
-      return data.items.map(item => ({
-        cat: feed.cat, label: feed.label, color: feed.color,
-        title: stripHtml(item.title) || 'Sans titre',
-        desc: stripHtml(item.description)?.slice(0, 150) || '',
-        link: item.link || '#',
-        pubDate: item.pubDate || ''
-      }));
-    }
-  } catch(e) {}
-  return [];
+    const text = await res.text();
+    return parseRSS(text, feed);
+  } catch(e) { return []; }
 }
 
 async function init() {
@@ -477,8 +520,11 @@ async function init() {
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
   if (!allArticles.length) {
-    document.getElementById('articles-grid').innerHTML =
-      '<div class="state-msg">Impossible de charger les flux. Vérifiez votre connexion.</div>';
+    document.getElementById('articles-grid').innerHTML = `
+      <div class="state-msg">
+        Les flux ne sont pas accessibles pour le moment.<br>
+        Consultez directement les sources ci-dessous.
+      </div>`;
     return;
   }
   renderArticles();
